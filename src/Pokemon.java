@@ -30,7 +30,7 @@ public class Pokemon implements Comparable<String>, Serializable
         this.name = name;
         this.generation = generation;
         this.color = color;
-        savePokemon();
+        capturePokemon();
     }
 
     public Pokemon(String pokemonName)
@@ -83,9 +83,9 @@ public class Pokemon implements Comparable<String>, Serializable
         return 0;
     }
 
-    public void savePokemon()throws FileSystemNotFoundException{
+    public void capturePokemon()throws FileSystemNotFoundException{
         try {
-            FileOutputStream fos = new FileOutputStream(name+ ".pkb");
+            FileOutputStream fos = new FileOutputStream("Files/"+ name+ ".pkb");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
@@ -97,7 +97,7 @@ public class Pokemon implements Comparable<String>, Serializable
 
     public Pokemon load(String pokemon)throws FileNotFoundException{
         try{
-            FileInputStream fis = new FileInputStream(pokemon);
+            FileInputStream fis = new FileInputStream("Files/"+ pokemon);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
             Object object = ois.readObject();
