@@ -1,0 +1,13 @@
+Bulbasaur|Grass, Poison|1|Bulbasaur.png|Groen|
+Charmander|Fire|1|Charmander.png|Oranje|
+Chikorita|Grass|2|Chikortia.png|Groen|
+Chimchar|Fire|4|Chimchar.png|Oranje|
+Cyndaquil|Fire|2|Cyndaquil.png|Creme|
+Mudkip|Water|3|Mudkip.png|Blauw|
+Pikachu|Electric|1|Pikachu.png|Geel|
+Piplup|Water|4|Piplup.png|Blauw|
+Squirtle|Water|1|Squirtle.png|Blauw|
+Torchic|Fire|3|Torchic.png|Oranje|
+Totodile|Water|2|Totodile.png|Blauw|
+Treecko|Grass|3|Treecko.png|Groen|
+Turtwig|Grass|4|Turtwig.png|Groen|
