@@ -133,26 +133,31 @@ public class Client extends JFrame implements Runnable, Serializable
 		{
 			for(int y = 0; y < 5; y++)
 			{
-				JButton b = new JButton(new ImageIcon("Data" + "\\" + pokemons.get(i).getName() + ".png"));
-				pokePane.add(b);
-				b.addActionListener(new ActionListener()
-				{
-					
-					@Override
-					public void actionPerformed(ActionEvent e)
+				if(i < 13)
+				{	
+					String name = pokemons.get(i).getName();
+					JButton b = new JButton(new ImageIcon("Data" + "\\" + pokemons.get(i).getName() + ".png"));
+					pokePane.add(b);
+					b.addActionListener(new ActionListener()
 					{
-						pokemonChoose = pokemons.get(i).getName();
-						try {
-							System.out.println("send: " + pokemonChoose);
-							toServer.writeUTF(pokemonChoose);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						
+						@Override
+						public void actionPerformed(ActionEvent e)
+						{
+							pokemonChoose = name;
+							try {
+								System.out.println("send: " + pokemonChoose);
+								toServer.writeUTF(pokemonChoose);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
-					}
-				});
+					});
+					
+					i++;
+				}
 				
-				//i++;
 			}
 		}
 	}
@@ -273,11 +278,12 @@ public class Client extends JFrame implements Runnable, Serializable
 		vragen.removeAll();
 		for(int i = 0; i<5; i++)
 		{
-			int g = (int) Math.random() * 27; 
+			int g = (int)( Math.random() * 27); 
+			System.out.println("g: " + g);
 			vragen.addItem(questions.get(g));
-			
-			selectQuestion = vragen.getItemAt(0);
 		}
+		
+		selectQuestion = vragen.getItemAt(0);
 	}
 	
 	//ophalen van alle .pkb files en deze omzetten naar Pokemon objects
