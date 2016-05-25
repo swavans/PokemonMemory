@@ -5,9 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
 
-public class Server
+import javax.swing.JFrame;
+
+public class Server extends JFrame
 {
 	public static void main(String[] args)
 	{
@@ -16,6 +17,11 @@ public class Server
 	
 	public Server()
 	{
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    setSize(300, 300);
+	    setTitle("Server");
+	    setVisible(true);
+	    
 		try
 		{
 			//setup server

@@ -71,11 +71,13 @@ public class Client extends JFrame implements Runnable, Serializable
 		pokePane = new JPanel(new GridLayout(5, 3));
 		buttonPane = new JPanel(new FlowLayout());
 		questionPane = new JPanel(new GridLayout(2, 1));
-		questionPane.setPreferredSize(new Dimension(400, 768));
+		questionPane.setPreferredSize(new Dimension(400, 600));
 		
 		contentPane.add(pokePane, BorderLayout.CENTER);
 		contentPane.add(buttonPane, BorderLayout.SOUTH);
 		contentPane.add(questionPane, BorderLayout.EAST);
+		
+		connect();
 		
 		//setup data pokemon load
 		File f = new File("Files");
@@ -90,7 +92,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		setContentPane(contentPane);
 		setVisible(true);
 		setResizable(false);
-		setSize(1024,768);
+		setSize(1024,600);
 		setLocationRelativeTo(null);
 		
 	}
@@ -141,6 +143,7 @@ public class Client extends JFrame implements Runnable, Serializable
 					{
 						pokemonChoose = pokemons.get(i).getName();
 						try {
+							System.out.println("send: " + pokemonChoose);
 							toServer.writeUTF(pokemonChoose);
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
@@ -149,7 +152,7 @@ public class Client extends JFrame implements Runnable, Serializable
 					}
 				});
 				
-				i++;
+				//i++;
 			}
 		}
 	}
