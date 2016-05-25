@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -39,12 +40,13 @@ public class Client extends JFrame implements Runnable, Serializable
 	
 	private ArrayList<Pokemon> pokemons = new ArrayList();
 	private ArrayList<String> questions = new ArrayList();
-	private Set<String> types;
-	private Set<String> colors;
-	private Set<Integer> generations;
+	private Set<String> types = new HashSet<>();
+	private Set<String> colors = new HashSet<>();
+	private Set<Integer> generations = new HashSet<>();
 	
 	int i = 0;
 	
+	//de geselecteerde vraag die wordt verstuurd
 	String selectQuestion = "";
 	
 	//setup for questionspane
@@ -138,6 +140,12 @@ public class Client extends JFrame implements Runnable, Serializable
 					public void actionPerformed(ActionEvent e)
 					{
 						pokemonChoose = pokemons.get(i).getName();
+						try {
+							toServer.writeUTF(pokemonChoose);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 				});
 				
@@ -146,6 +154,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		}
 	}
 	
+	//aanmaken van de buttons met hun listener
 	private void buttons()
 	{
 		//setup send, quit, new game buttons
@@ -179,7 +188,7 @@ public class Client extends JFrame implements Runnable, Serializable
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Auto-generated method stub
+				System.exit(0);
 				
 			}
 		});
@@ -212,6 +221,7 @@ public class Client extends JFrame implements Runnable, Serializable
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				//de geselecteerde vraag toewijzen aan de variabele zodat deze kan worden verstuurd
 				selectQuestion = (String) vragen.getSelectedItem();
 				
 			}
@@ -226,6 +236,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		randomFillCombo();
 	}
 	
+	//aanmaken van alle mogelijke vragen die gesteld kunnen worden
 	private void fillCombobox()
 	{
 		//setup the questions
@@ -252,6 +263,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		}
 	}
 	
+	//het vullen van de combobox met de vragen die worden getoond
 	private void randomFillCombo()
 	{
 		//random questions to the JCombobox
@@ -265,6 +277,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		}
 	}
 	
+	//ophalen van alle .pkb files en deze omzetten naar Pokemon objects
 	private void fill(File file)
 	{
 		System.out.println("search pkb files");
@@ -303,6 +316,7 @@ public class Client extends JFrame implements Runnable, Serializable
 		}
 	}
 	
+	//opvragen wat de extension is van een object
 	public String getFileExtension(File file) 
 	{
 		//search fileextension of the file
