@@ -63,6 +63,30 @@ public class Server extends JFrame
 		{
 			this.player1 = player1;
 			this.player2 = player2;
+			
+			try
+			{
+				//initialisation dataStream for player1
+				toPlayer1 = new DataOutputStream(player1.getOutputStream());
+				fromPlayer1 = new DataInputStream(player1.getInputStream());
+				
+				//initialisation dataStream for player2
+				toPlayer2 = new DataOutputStream(player2.getOutputStream());
+				fromPlayer2 = new DataInputStream(player2.getInputStream());
+				
+				
+				//playing the game
+				while(true)
+				{
+					//TODO afhandeling van het spel
+					
+				}
+				
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		@Override
