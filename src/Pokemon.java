@@ -1,21 +1,41 @@
 
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.FileSystemNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Pokemon implements Comparable<String>, Serializable
 {
 	public static void main(String[] args)
 	{
-		new Pokemon("Pikachu", 1, "Yellow", new ArrayList<String>());
-		new Pokemon ("Pikachu.pkb");
+		
+		try(BufferedReader br = new BufferedReader(new FileReader("Data//Pokemon.txt"))) {
 
+			String sCurrentLine;
+
+
+			while ((sCurrentLine = br.readLine()) != null) {
+				String[] addPokemon = sCurrentLine.split(" ");
+				String[] types = addPokemon[1].split(",");
+				ArrayList<String> pTypes = new ArrayList<>();
+				for(int i = 0; i<types.length;i++)
+					pTypes.add(types[i]);
+				new Pokemon(addPokemon[0], Integer.parseInt(addPokemon[2]), addPokemon[4], pTypes);
+				
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
     private ArrayList<String> types;
@@ -89,6 +109,7 @@ public class Pokemon implements Comparable<String>, Serializable
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(this);
             oos.close();
+            System.out.println(this.getName() + " has been stored at Bill's PC");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -115,4 +136,25 @@ public class Pokemon implements Comparable<String>, Serializable
         }
         return null;
     }
+    
+    public static Comparator<Pokemon> GenComparator = new Comparator<Pokemon>() 
+    {
+
+		public int compare(Pokemon p1, Pokemon p2) 
+		{
+		
+			int g1 = p1.getGeneration();
+			int g2 = p2.getGeneration();
+			
+			return g1 - g2;
+		}
+
+    };
+    
+    public String toString()
+    {
+    	return (this.getName() + " "+ this.getColor()+ " " + this.getGeneration()+ " "+ this.getTypes().toString()); 
+    }
+
+	
 }

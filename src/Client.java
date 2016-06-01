@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -14,9 +15,14 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,6 +36,7 @@ public class Client extends JFrame implements Runnable, Serializable
 	
 	private DataInputStream fromServer;
 	private DataOutputStream toServer;
+	private String currentQuestionItem;
 	
 	JPanel contentPane;
 	JPanel pokePane;
@@ -39,10 +46,13 @@ public class Client extends JFrame implements Runnable, Serializable
 	private String pokemonChoose = "";
 	
 	private ArrayList<Pokemon> pokemons = new ArrayList();
-	private ArrayList<String> questions = new ArrayList();
-	private Set<String> types = new HashSet<>();
-	private Set<String> colors = new HashSet<>();
-	private Set<Integer> generations = new HashSet<>();
+	private ArrayList<ArrayList> allQuestions = new ArrayList<>();
+	private ArrayList<String> types;
+	private ArrayList<String> types2;
+	private ArrayList<String> colors;
+	private ArrayList<String> generations; 
+	private ArrayList<String> pokeNames;
+	private int selectedQuestionNumber;
 	
 	int i = 0;
 	
@@ -136,7 +146,17 @@ public class Client extends JFrame implements Runnable, Serializable
 				if(i < 13)
 				{	
 					String name = pokemons.get(i).getName();
-					JButton b = new JButton(new ImageIcon("Data" + "\\" + pokemons.get(i).getName() + ".png"));
+					Image img = null;
+					try
+					{
+						img = ImageIO.read(new File("Data" + "\\" + pokemons.get(i).getName() + ".png"));
+					} catch (IOException e2)
+					{
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+				
+					JButton b = new JButton(new ImageIcon(img.getScaledInstance(70, 100, Image.SCALE_SMOOTH)));
 					pokePane.add(b);
 					b.addActionListener(new ActionListener()
 					{
@@ -167,24 +187,27 @@ public class Client extends JFrame implements Runnable, Serializable
 	{
 		//setup send, quit, new game buttons
 		
-		JButton send = new JButton("SEND");
+		JButton send = new JButton("Transfer Pokemon");
 		send.addActionListener(new ActionListener()
 		{
 			
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				try
-				{
-					//send the question to the server
-					toServer.writeUTF(selectQuestion);
-				} catch (IOException e1)
-				{
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-				randomFillCombo();
+				procesAnswer(true);
+//				try
+//				{
+//					//send the question to the server
+//					toServer.writeUTF(selectQuestion);
+//				
+//
+//				} catch (IOException e1)
+//				{
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				
+			
 				
 			}
 		});
@@ -229,9 +252,14 @@ public class Client extends JFrame implements Runnable, Serializable
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				//System.out.println((String)allQuestions.get(vragen.getSelectedIndex()).get(1));
 				//de geselecteerde vraag toewijzen aan de variabele zodat deze kan worden verstuurd
-				selectQuestion = (String) vragen.getSelectedItem();
-				
+				selectedQuestionNumber = vragen.getSelectedIndex();
+				if(allQuestions.size()>0)
+				{
+					selectQuestion = (String)allQuestions.get(selectedQuestionNumber).get(1);
+
+				}
 			}
 		});
 		questionPane.add(vragen);
@@ -239,56 +267,99 @@ public class Client extends JFrame implements Runnable, Serializable
 		//setup dialog
 		input = new JTextArea();
 		questionPane.add(input);
-		
-		fillCombobox();
 		randomFillCombo();
 	}
 	
-	//aanmaken van alle mogelijke vragen die gesteld kunnen worden
-	private void fillCombobox()
-	{
-		//setup the questions
-		for(String t : types)
-		{
-			String q = "Is het type van deze pokemon.. " + t + "?";
-			questions.add(q);
-		}
-		for(String t : colors)
-		{
-			String q = "Is de kleur van deze pokemon.. " + t + "?";
-			questions.add(q);
-		}
-		for(Integer t : generations)
-		{
-			String q = "Komt deze pokemon uit generations: " + t + "?";
-			questions.add(q);
-		}
-		for(Pokemon p : pokemons)
-		{
-			String n = p.getName();
-			String q = "Is deze pokemon: " + n + "?";
-			questions.add(q);
-		}
-	}
-	
+
 	//het vullen van de combobox met de vragen die worden getoond
 	private void randomFillCombo()
 	{
-		//random questions to the JCombobox
-		vragen.removeAll();
+		if(pokemons.size()<1)
+			System.out.println("No pokemons");
+		for(Pokemon pokemon : pokemons)
+			System.out.println(pokemon.toString());
+		allQuestions.clear();
+		vragen.removeAllItems();
 		for(int i = 0; i<5; i++)
 		{
-			int g = (int)( Math.random() * 27); 
-			System.out.println("g: " + g);
-			vragen.addItem(questions.get(g));
+			int g = (int)( Math.random() * 4); 
+			switch (g)
+			{
+			//names
+			case 0:
+				if(pokeNames.size() > 0){
+					String name = (String) pokeNames.get((int) (Math.random()*(pokeNames.size())));
+				
+				ArrayList<String> question = new ArrayList<>();
+				question.add("Is deze Pokemon ");
+				question.add(name);
+				question.add("name");
+				allQuestions.add(question);
+				}
+				else
+					System.out.println("Clear Names");
+				break;
+			//types
+			case 1: 
+				if(types.size()>0){
+				String type = (String) types.get((int) (Math.random()*(types.size()-1)));
+				ArrayList<String> question2 = new ArrayList<>();
+				question2.add("Is het type van de Pokemon ");
+				question2.add(type);
+				question2.add("type");
+				allQuestions.add(question2);
+				}
+				else
+					System.out.println("Clear Types");
+				break;
+			//colors	
+			case 2: 
+				if(colors.size()>0){
+				String color = (String) colors.get((int)(Math.random()*(colors.size()-1)));
+				ArrayList<String> question3 = new ArrayList<>();
+				question3.add("Is de kleur van deze pokemon ");
+				question3.add(color);
+				question3.add("color");
+				allQuestions.add(question3);
+				}
+				else
+					System.out.println("Clear Colors");
+				break;
+			//generations
+			case 3:
+				if(generations.size()>0){
+				String gen = (String) generations.get((int)(Math.random()*(generations.size()-1)));
+				ArrayList<String> question4 = new ArrayList<>();
+				question4.add("Is deze pokemon van generatie ");
+				question4.add(gen);
+				question4.add("generation");
+				allQuestions.add(question4);
+				}
+				else
+					System.out.println("Clear generations");
+				break;			
+			}
 		}
-		
+		for(ArrayList<String> list: allQuestions)
+		{
+			String vraag ="";
+			for(int p = 0; p<list.size()-1; p++)
+			{
+				vraag = vraag+list.get(p);
+			}
+			vraag = vraag + " ?";
+			vragen.addItem(vraag);
+		}
 		selectQuestion = vragen.getItemAt(0);
 	}
 	
 	//ophalen van alle .pkb files en deze omzetten naar Pokemon objects
 	private void fill(File file)
 	{
+		Set<String> pNames= new HashSet<>();
+		Set<String> pTypes= new HashSet<>();
+		Set<String> pGen = new HashSet<>();
+		Set<String> pColor = new HashSet<>();
 		System.out.println("search pkb files");
 		//search .pkb files 
 		if(file.exists())
@@ -310,19 +381,29 @@ public class Client extends JFrame implements Runnable, Serializable
 						Pokemon p = new Pokemon(files[i].getName());
 						pokemons.add(p);
 						
+						pNames.add(p.getName());
+						
 						for(String type : p.getTypes())
 						{
-							types.add(type);
+							pTypes.add(type);
 						}
 						
-						colors.add(p.getColor());
+						pColor.add(p.getColor());
 						
-						generations.add(p.getGeneration());
+						pGen.add(p.getGeneration()+ "");
 						
 					}
 				}
 			}
 		}
+		Collections.sort(pokemons, Pokemon.GenComparator);
+		pokeNames = new ArrayList<>( pNames);
+		types = new ArrayList<>(pTypes);
+		types2 = new ArrayList<>(types);
+		generations = new ArrayList<>(pGen);
+		colors = new ArrayList<>(pColor);
+		
+		
 	}
 	
 	//opvragen wat de extension is van een object
@@ -335,6 +416,133 @@ public class Client extends JFrame implements Runnable, Serializable
         else return "";
     }
 	
+	public void procesAnswer(boolean answer)
+	{
+		switch((String)allQuestions.get(selectedQuestionNumber).get(2))
+		{
+		case ("name"):
+			if(answer)
+			{
+				procesAnswerTrue(pokeNames);
+			}
+			else
+				procesAnswerFalse(pokeNames);
+			break;
+		case ("type"):
+			if(answer)
+			{
+				procesAnswerTrue(types);
+			}
+			else
+				procesAnswerFalse(types);
+			break;
+		case ("generation"):
+			if(answer)
+			{
+				procesAnswerTrue(generations);
+			}
+			else
+				procesAnswerFalse(generations);		
+			break;
+		case "color":
+			if(answer)
+			{
+				procesAnswerTrue(colors);
+			}
+			else
+				procesAnswerFalse(colors);
+			break;			
+		}
+		
+		createNewPokemonList(answer);
+		generateList();
+		//if(pokeNames.size()>0 || types.size()>0|| generations.size()>0||colors.size()>0 )
+		randomFillCombo();
+		System.out.println("Succes");
+	}
 	
+	private void procesAnswerTrue(ArrayList<String> list)
+	{
+		list.clear();
+		list.add(selectQuestion);
+	}
 	
+	private void procesAnswerFalse(ArrayList<String> list)
+	{
+		Iterator<String> itr = list.iterator();
+		while(itr.hasNext())
+		{
+			String s = itr.next();
+			if(s.equals(selectQuestion))
+			{
+				itr.remove();
+			}
+		}
+	}
+	
+	private void createNewPokemonList(boolean answer)
+	{
+		String iets = selectQuestion;
+		Iterator<Pokemon> pokeitr = pokemons.iterator();
+		
+		while(pokeitr.hasNext())
+		{
+			Pokemon p = pokeitr.next();
+			
+			if(!(pokeNames.contains(p.getName())))
+			{
+				pokeitr.remove();
+			}
+			
+			else if(!(generations.contains((p.getGeneration() + ""))))
+			{
+				pokeitr.remove();
+			}
+			
+			else if(!(colors.contains(p.getColor())))
+			{
+				pokeitr.remove();
+			}
+			
+
+			if(types2.contains(selectQuestion))
+			{
+				ArrayList<String> t3 = new ArrayList<>(types);
+				if((!(p.getTypes().contains(selectQuestion))) && answer)
+					pokeitr.remove();
+				else if(p.getTypes().contains(selectQuestion) && !answer)
+					pokeitr.remove();
+			}
+			
+		}
+
+		
+	}
+	
+	private void generateList()
+	{
+		Set<String> pNames= new HashSet<>();
+		Set<String> pTypes= new HashSet<>();
+		Set<String> pGen = new HashSet<>();
+		Set<String> pColor = new HashSet<>();
+		for(Pokemon p : pokemons)
+		{
+			pNames.add(p.getName());
+			
+			for(String type : p.getTypes())
+			{
+				pTypes.add(type);
+			}
+			
+			pColor.add(p.getColor());
+			
+			pGen.add(p.getGeneration()+ "");
+		}
+		pokeNames = new ArrayList<>( pNames);
+		types = new ArrayList<>(pTypes);
+		types2 = new ArrayList<>(types);
+		generations = new ArrayList<>(pGen);
+		colors = new ArrayList<>(pColor);
+		
+	}
 }
