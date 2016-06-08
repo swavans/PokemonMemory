@@ -93,7 +93,7 @@ public class Server extends JFrame
 			}
 			catch(Exception e)
 			{
-				
+				System.exit(0);
 			}
 
 		}
@@ -145,13 +145,11 @@ public class Server extends JFrame
 						turn++;
 						if (turn % 2 == 1)
 						{
-							
-							
 							String question = null;
 							// set turn true player 1
 							toPlayer1.writeBoolean(true);
 							
-							toPlayer1.writeInt(gameS2);
+							
 							//System.out.println("send turn p1");
 							while (question == null)
 							{
@@ -165,17 +163,14 @@ public class Server extends JFrame
 								//System.out.println(checkAwnser(question, player2P));
 							}
 							
-							gameS1 = fromPlayer1.readInt();
 							
 						} else
 						{
-							
-							
 							String question = null;
 							// set turn true player 1
 							toPlayer2.writeBoolean(true);
 							
-							toPlayer2.writeInt(gameS1);
+							
 							while (question == null)
 							{
 								question = fromPlayer2.readUTF();
@@ -186,7 +181,6 @@ public class Server extends JFrame
 
 							}
 							
-							gameS2 = fromPlayer2.readInt();
 							
 						}
 					}

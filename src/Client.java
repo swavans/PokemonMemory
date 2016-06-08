@@ -117,20 +117,10 @@ public class Client extends JFrame implements Runnable, Serializable
 	@Override
 	public void run()
 	{
-		
 		while(gameState == 0)
 		{
 			if(getAnswer())
 			{
-				try
-				{
-					gameStateP2 = fromServer.readInt();
-				} catch (IOException e2)
-				{
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				
 				System.out.println("sA");
 				try
 				{
@@ -147,44 +137,21 @@ public class Client extends JFrame implements Runnable, Serializable
 				sendAnswer =false;
 				myTurn = false;
 			}
-			
-			try
-			{
-				toServer.writeInt(gameState);
-			} catch (IOException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 		}
 		
-		if(gameState == 1 || gameStateP2 == 2)
+		if(gameState == 1)
 		{
 			System.out.println("WINNER");
-			
-//			try
-//			{
-//				toServer.writeInt(gameState);
-//			} catch (IOException e1)
-//			{
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-			
+			System.exit(0);
 		}
-		if(gameState == 2 || gameStateP2 == 1)
+		
+		if(gameState == 2)
 		{
 			System.out.println("LOSE");
-			
-//			try
-//			{
-//				toServer.writeInt(gameState);
-//			} catch (IOException e1)
-//			{
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
+			System.exit(0);
 		}
+		
+		
 	}
 
 	private void connect()
@@ -315,20 +282,20 @@ public class Client extends JFrame implements Runnable, Serializable
 			}
 		});
 
-		JButton ngame = new JButton("NEW GAME");
-		ngame.addActionListener(new ActionListener()
-		{
-
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				// TODO Auto-generated method stub
-
-			}
-		});
+//		JButton ngame = new JButton("NEW GAME");
+//		ngame.addActionListener(new ActionListener()
+//		{
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				// TODO Auto-generated method stub
+//
+//			}
+//		});
 
 		// add buttons to his JPanel
-		buttonPane.add(ngame);
+//		buttonPane.add(ngame);
 		buttonPane.add(quit);
 		buttonPane.add(send);
 	}
